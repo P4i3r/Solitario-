@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -29,6 +27,7 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
     //Animator animator;
     PilaManager pilaScript;
     PilaFinalManager pilaFinalScript;
+    MazzoManager mazzoScript;
 
     // ---<[ GRAFICA]>---
     Image largeSuitImage;                       //seme centrale
@@ -165,7 +164,7 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
     //Muovo la carta
     public void OnDrag(PointerEventData eventData)
     {
-        this.transform.position = eventData.position;
+        transform.position = eventData.position;
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -182,6 +181,8 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
                 pilaScript.RefreshCardList();
                 pilaScript.GetColorAndNumber();
 
+                Debug.Log("Rimuovo " + transform.name + " dalla lista della pila.");
+                
                 //Se la pila ha più di 0 elementi vado a rivelare l'ultima carta
                 if (pilaScript.listaPila.Count > 0)
                     pilaScript.RevealLastCard();
@@ -190,6 +191,16 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
             {
                 pilaFinalScript = lastTransformParent.GetComponent<PilaFinalManager>();
                 pilaFinalScript.RemoveCardFromList();
+
+                Debug.Log("Rimuovo " + transform.name + " dalla lista della pila Final.");
+            }
+            else if (lastTransformParent.tag == "pilaScarti")
+            {
+                mazzoScript = GameObject.FindGameObjectWithTag("pilaMazzo").GetComponent<MazzoManager>();
+                mazzoScript.RemoveCardFromList();
+
+                Debug.Log("Rimuovo " + transform.name + " dalla lista del mazzo.");
+
             }
         }
     }

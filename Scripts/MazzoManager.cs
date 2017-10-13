@@ -26,34 +26,30 @@ public class MazzoManager : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log("Click");
-        //Verifico se ho carte nel mazzo
-        if (listaMazzo.Count == 0)
+        if (listaMazzo.Count == 0  && listaScarti.Count > 0)    //Se ho carte nella pila degli scarti e non ho un mazzo, rimetti le carte nel mazzo.
         {
-            listaScarti.Reverse();                          //Giro le carte nella lista
-            foreach (var cartaName in listaScarti)
-            {   
-                listaMazzo.Insert(0, cartaName);            //Insert al posto di Add in quanto giro le carte nella lista
+            foreach (var cartaName in listaScarti)              
+            {
+                listaMazzo.Add(cartaName);
+
                 carta = pilaScarti.transform.Find(cartaName).gameObject;
-
-                cartaImage = carta.GetComponent<Image>();   //Disattivo il raycast delle carte
-                cartaImage.raycastTarget = false;
-
-                carta.transform.SetParent(transform);
+                print(carta.name + " " + cartaName);
+                Destroy(carta);
             }
-
             listaScarti.Clear();            //Svuoto la lista degli scarti
-            primoCicloMazzo = false;        //Non è più il primo ciclo del mazzo
-            Debug.Log("Resetto");
-            return;
-        }
-
-        MoveCard();
-        
-        if (primoCicloMazzo && listaMazzo.Count > 0)   //Se non è il primo ciclo non creare nuove carte 
-        {
-            Debug.Log("Creo");
             CreateCard();
+            Debug.Log("Ho rimescolato il mazzo e ho creato " + listaMazzo[0]);
+        }
+        else if (listaMazzo.Count == 1)     //Caso in cui ho un'unica carta. La muovo, ma non ne creo di nuove perchè non ne ho.
+        {
+            MoveCard();
+            Debug.Log("Muovo " + listaScarti[ (listaScarti.Count-1) ] + " nella pila degli scarti");
+
+        }else if (listaMazzo.Count > 1)     //Caso in cui ho più di 1 carta rimanente nel mazzo. 
+        {
+            MoveCard();
+            CreateCard();
+            Debug.Log("Muovo " + listaScarti[ (listaScarti.Count - 1) ] + " nella pila degli scarti. Creo " + listaMazzo[0] + ".");
         }
     }
 
@@ -67,8 +63,7 @@ public class MazzoManager : MonoBehaviour, IPointerClickHandler
             listaMazzo.Add("h" + i);
             listaMazzo.Add("c" + i);
         }
-        //Eseguo lo shuffle del mazzo
-        //var random = new Random();
+
         listaMazzo.Sort((x, y) => Random.value < 0.5f ? -1 : 1);     //DA CAMBIARE: Implementare Fisher-Yates o altra alternativaa
     }
 
@@ -96,5 +91,11 @@ public class MazzoManager : MonoBehaviour, IPointerClickHandler
 
         listaScarti.Add(listaMazzo[0]);     //Aggiungo la carta alla lista degli scarti
         listaMazzo.RemoveAt(0);             //La rimuovo da questa
+    }
+
+    public void RemoveCardFromList()        //Quando muovo la prima carta degli scarti in una pila la rimuovo dalla lista
+    {
+        Debug.Log("Ho rimosso " + listaScarti[listaScarti.Count - 1]);
+        listaScarti.RemoveAt(listaScarti.Count - 1);            // listaScarti.Count - 1);
     }
 }
