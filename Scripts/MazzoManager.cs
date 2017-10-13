@@ -8,6 +8,9 @@ public class MazzoManager : MonoBehaviour, IPointerClickHandler
     public GameObject cartaPrefab;
     public GameObject pilaScarti;
 
+    GameObject pila;
+    PilaManager pilaScript;
+
     GameObject carta;
     Image cartaImage;
     CardManager scriptCarta;
@@ -15,12 +18,12 @@ public class MazzoManager : MonoBehaviour, IPointerClickHandler
     public List<string> listaMazzo;
     public List<string> listaScarti;
 
-    bool primoCicloMazzo;
-
     private void Start()
     {
-        primoCicloMazzo = true;
         CreateOrder();
+
+        CreateBoard();  //IN TESTING
+
         CreateCard();               //Genero la prima carta che rimane coperta
     }
 
@@ -97,5 +100,36 @@ public class MazzoManager : MonoBehaviour, IPointerClickHandler
     {
         Debug.Log("Ho rimosso " + listaScarti[listaScarti.Count - 1]);
         listaScarti.RemoveAt(listaScarti.Count - 1);            // listaScarti.Count - 1);
+    }
+
+    void CreateBoard()
+    {   
+
+        for (int i = 1; i < 8; i++)
+        {
+            string nomePilaTemp = "pila";
+            nomePilaTemp = nomePilaTemp + i;
+
+            Debug.Log(nomePilaTemp);
+            for (int j = 0; j < i; j++)
+            {
+                CreateCard();
+                MoveToPila(nomePilaTemp, i, j);
+            }
+        }
+    }
+
+    void MoveToPila(string nomePila, int primo, int secondo)
+    {
+        pila = GameObject.Find(nomePila);
+        carta.transform.SetParent(pila.transform);
+
+        pilaScript = pila.GetComponent<PilaManager>();
+        pilaScript.RefreshCardList();
+        if (secondo == primo - 1) {
+            pilaScript.RevealLastCard();
+        }
+
+        listaMazzo.RemoveAt(0);             //La rimuovo da questa
     }
 }
