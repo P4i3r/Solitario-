@@ -21,22 +21,18 @@ public class MazzoManager : MonoBehaviour, IPointerClickHandler
     private void Start()
     {
         CreateOrder();
-
-        CreateBoard();  //IN TESTING
-
+        CreateBoard();              //IN TESTING
         CreateCard();               //Genero la prima carta che rimane coperta
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (listaMazzo.Count == 0  && listaScarti.Count > 0)    //Se ho carte nella pila degli scarti e non ho un mazzo, rimetti le carte nel mazzo.
+        if (listaMazzo.Count == 0 && listaScarti.Count > 0)    //Se ho carte nella pila degli scarti e non ho un mazzo, rimetti le carte nel mazzo.
         {
-            foreach (var cartaName in listaScarti)              
+            foreach (var cartaName in listaScarti)
             {
                 listaMazzo.Add(cartaName);
-
                 carta = pilaScarti.transform.Find(cartaName).gameObject;
-                print(carta.name + " " + cartaName);
                 Destroy(carta);
             }
             listaScarti.Clear();            //Svuoto la lista degli scarti
@@ -46,20 +42,19 @@ public class MazzoManager : MonoBehaviour, IPointerClickHandler
         else if (listaMazzo.Count == 1)     //Caso in cui ho un'unica carta. La muovo, ma non ne creo di nuove perchè non ne ho.
         {
             MoveCard();
-            Debug.Log("Muovo " + listaScarti[ (listaScarti.Count-1) ] + " nella pila degli scarti");
-
-        }else if (listaMazzo.Count > 1)     //Caso in cui ho più di 1 carta rimanente nel mazzo. 
+            Debug.Log("Muovo " + listaScarti[(listaScarti.Count - 1)] + " nella pila degli scarti");
+        }
+        else if (listaMazzo.Count > 1)     //Caso in cui ho più di 1 carta rimanente nel mazzo. 
         {
             MoveCard();
             CreateCard();
-            Debug.Log("Muovo " + listaScarti[ (listaScarti.Count - 1) ] + " nella pila degli scarti. Creo " + listaMazzo[0] + ".");
+            Debug.Log("Muovo " + listaScarti[(listaScarti.Count - 1)] + " nella pila degli scarti. Creo " + listaMazzo[0] + ".");
         }
     }
 
     void CreateOrder()
     {
-        //Popolo il mazzo di 52 carte
-        for (int i = 1; i < 14; i++)
+        for (int i = 1; i < 14; i++)            //Popolo il mazzo di 52 carte
         {
             listaMazzo.Add("s" + i);
             listaMazzo.Add("d" + i);
@@ -67,14 +62,13 @@ public class MazzoManager : MonoBehaviour, IPointerClickHandler
             listaMazzo.Add("c" + i);
         }
 
-        listaMazzo.Sort((x, y) => Random.value < 0.5f ? -1 : 1);     //DA CAMBIARE: Implementare Fisher-Yates o altra alternativaa
+        listaMazzo.Sort((x, y) => Random.value < 0.5f ? -1 : 1);     //DA CAMBIARE: Implementare Fisher-Yates o altra alternativa
     }
 
     //Creo la carta, il nome lo prendo dalla lista precostruita
     void CreateCard()
     {
         GameObject nuovaCarta = Instantiate(cartaPrefab, transform.position, transform.rotation);
-
         nuovaCarta.name = listaMazzo[0];
         nuovaCarta.transform.SetParent(transform);
 
@@ -103,14 +97,13 @@ public class MazzoManager : MonoBehaviour, IPointerClickHandler
     }
 
     void CreateBoard()
-    {   
+    {
 
         for (int i = 1; i < 8; i++)
         {
             string nomePilaTemp = "pila";
             nomePilaTemp = nomePilaTemp + i;
 
-            Debug.Log(nomePilaTemp);
             for (int j = 0; j < i; j++)
             {
                 CreateCard();
@@ -126,8 +119,10 @@ public class MazzoManager : MonoBehaviour, IPointerClickHandler
 
         pilaScript = pila.GetComponent<PilaManager>();
         pilaScript.RefreshCardList();
-        if (secondo == primo - 1) {
+        if (secondo == primo - 1)
+        {
             pilaScript.RevealLastCard();
+            pilaScript.GetColorAndNumber();
         }
 
         listaMazzo.RemoveAt(0);             //La rimuovo da questa

@@ -40,8 +40,8 @@ GameObject:
   - component: {fileID: 222462798170296846}
   - component: {fileID: 114204158411766148}
   - component: {fileID: 114321503039360584}
-  - component: {fileID: 95421404410967472}
   - component: {fileID: 114032991212071094}
+  - component: {fileID: 95982465699969956}
   m_Layer: 5
   m_Name: carta
   m_TagString: Untagged
@@ -85,7 +85,7 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!95 &95421404410967472
+--- !u!95 &95982465699969956
 Animator:
   serializedVersion: 3
   m_ObjectHideFlags: 1
@@ -94,7 +94,7 @@ Animator:
   m_GameObject: {fileID: 1788044362249334}
   m_Enabled: 0
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 2f7fa269dd1a3364cbb0298366155e43, type: 2}
+  m_Controller: {fileID: 9100000, guid: 17f69ff5e96d2294896ba1d5e0551dab, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

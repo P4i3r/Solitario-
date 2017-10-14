@@ -156,8 +156,12 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
         targetTransformParent = transform.parent;       //Salvo il mio parent di partenza, in modo da poterci tornare in caso di spostamento non permesso
         lastTransformParent = transform.parent;
 
+        //____ WORK IN PROGRESS : TEMP CODE ____
         //TODO : Devo verificare se sono la prima carta della pila o se faccio parte di un blocco ordinato
+        //pilaScript = lastTransformParent.GetComponent<PilaManager>();
+        //pilaScript.CheckCardPosition(transform.name);
 
+        //____ WORK IN PROGRESS : TEMP CODE ____
         transform.SetParent(transform.parent.parent);   //Rimuovo la mia carta dalla pila nell'inspector (mi permette di spostarla)
     }
 

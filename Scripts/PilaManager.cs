@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class PilaManager : MonoBehaviour, IDropHandler
 {
-
     GameObject carta;
     public List<string> listaPila;      //Lista degli elementi in questa pila
     public string colorePila;           //Colore richiesto
@@ -15,14 +13,12 @@ public class PilaManager : MonoBehaviour, IDropHandler
     //QUANDO UNA CARTA VIENE DROPPATA CONTROLLA CHE IL DROP SIA CORRETTO, IN CASO POSITIVO AGGIORNA LA LISTA E LA CARTA RICHIESTA
     public void OnDrop(PointerEventData eventData)
     {
-        //Usando event data risalgo alla carta droppata
-        carta = eventData.pointerDrag;
+        carta = eventData.pointerDrag;              //Usando event data risalgo alla carta droppata
         CardManager cardScript = carta.GetComponent<CardManager>();
-
         bool legitDrop = false;
 
         //Devo verificare che il drop sia lecito
-        if (cardScript.thisCard.number == numPila)          //Se il numero è corretto mi vado ad interessare del seme
+        if (cardScript.thisCard.number == numPila)  //Se il numero è corretto mi vado ad interessare del seme
         {
             if (colorePila == "undefined")
             {
@@ -59,9 +55,7 @@ public class PilaManager : MonoBehaviour, IDropHandler
         GetColorAndNumber();        //Ricavo colore e numero richiesto
 
         if (listaPila.Count > 0)
-        {
             RevealLastCard();
-        }
     }
 
     public void RefreshCardList()
@@ -95,12 +89,22 @@ public class PilaManager : MonoBehaviour, IDropHandler
 
     public void RevealLastCard()
     {
-        //Trovo l'ultima carta
-        carta = gameObject.transform.Find(listaPila[listaPila.Count - 1]).gameObject;
+        carta = gameObject.transform.Find(listaPila[listaPila.Count - 1]).gameObject;           //Trovo l'ultima carta
         CardManager cardScript = carta.GetComponent<CardManager>();
-        //Se quella carta non è rivelata fallo
-        if (!cardScript.thisCard.isRevealed)
+
+        if (!cardScript.thisCard.isRevealed)            //Se quella carta non è rivelata fallo
             cardScript.RevealCard();
+    }
+
+    public void CheckCardPosition(string cardName)      //In nome della carta che mi ha chiamato
+    {
+        int cardIndex = listaPila.IndexOf(cardName);
+        //Ho il numero della carta, ora devo controllare se ho una carta sopra, se non ce l'ho esco, se ce l'ho vedo se è rivelata, se non è esco
+        //se è rivelata controllo se è in scala con quella che sto trascinando, se lo è ripeto il passaggio fino a quando trovo una carta che non
+        //lo è. Ogni volta aggiunto quella carta come child.
+        //Impacchetto la scala, ma poi la devo anche far spacchettare.
+
+        Debug.Log(cardIndex);
     }
 
 }
