@@ -45,7 +45,6 @@ public class PilaManager : MonoBehaviour, IDropHandler
         {
             numPila = cardScript.thisCard.number - 1;
             cardScript.targetTransformParent = this.transform;
-            RefreshCardList();
         }
     }
 
@@ -96,15 +95,32 @@ public class PilaManager : MonoBehaviour, IDropHandler
             cardScript.RevealCard();
     }
 
-    public void CheckCardPosition(string cardName)      //In nome della carta che mi ha chiamato
+    public void CheckIfLadder(string cardName)      //In nome della carta che mi ha chiamato
     {
-        int cardIndex = listaPila.IndexOf(cardName);
+        if (listaPila.Count > 1)    //Se ho più di una carta nella lista
+        {
+            //var cardIndex = //listaPila.IndexOf(cardName);
+
+
+            int i = 0;
+            foreach (var item in listaPila)
+            {
+                i = i + 1;
+                if (item == cardName)
+                    break;
+            }
+            int cardIndex = i;
+            Debug.Log("###Numero di "+cardName+" nella pila :"+cardIndex);
+
+            string nameCardToCheck = listaPila[cardIndex-1];
+            GameObject cardToCheck = transform.Find(nameCardToCheck).gameObject;
+            CardManager cardScript = cardToCheck.GetComponent<CardManager>();
+            if (cardScript.thisCard.isRevealed)
+                Debug.Log("Carta rivelata");
+        }
         //Ho il numero della carta, ora devo controllare se ho una carta sopra, se non ce l'ho esco, se ce l'ho vedo se è rivelata, se non è esco
         //se è rivelata controllo se è in scala con quella che sto trascinando, se lo è ripeto il passaggio fino a quando trovo una carta che non
         //lo è. Ogni volta aggiunto quella carta come child.
         //Impacchetto la scala, ma poi la devo anche far spacchettare.
-
-        Debug.Log(cardIndex);
     }
-
 }

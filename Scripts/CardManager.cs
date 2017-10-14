@@ -158,8 +158,12 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
 
         //____ WORK IN PROGRESS : TEMP CODE ____
         //TODO : Devo verificare se sono la prima carta della pila o se faccio parte di un blocco ordinato
-        //pilaScript = lastTransformParent.GetComponent<PilaManager>();
-        //pilaScript.CheckCardPosition(transform.name);
+        if (transform.parent.tag == "pila")
+        {
+            pilaScript = lastTransformParent.GetComponent<PilaManager>();
+            pilaScript.CheckIfLadder(transform.name);
+        }
+
 
         //____ WORK IN PROGRESS : TEMP CODE ____
         transform.SetParent(transform.parent.parent);   //Rimuovo la mia carta dalla pila nell'inspector (mi permette di spostarla)
@@ -173,12 +177,19 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        cardImage.raycastTarget = true;     //Riabilito il raycast della carta   
+        cardImage.raycastTarget = true;             //Riabilito il raycast della carta   
         transform.SetParent(targetTransformParent); //Sposto la carta
 
         //Nel caso in cui cui questa carta sia stata spostata via permanentemente da una Pila dico a quella pila di ricontrollare
         if (this.transform.parent != lastTransformParent)           //la sua lista degli elementi e le sue richieste
         {
+            if (transform.parent.tag == "pila")     // Dico a questa pila di refreshare la lista perchè la carta è stata aggiunta
+            {
+                pilaScript = transform.parent.GetComponent<PilaManager>();
+                pilaScript.RefreshCardList();
+                pilaScript.GetColorAndNumber();
+            }
+            //Vado a dire alla mia vecchia pila che non ne faccio più parte
             if (lastTransformParent.tag == "pila")
             {
                 pilaScript = lastTransformParent.GetComponent<PilaManager>();
