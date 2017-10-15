@@ -7,11 +7,10 @@ using UnityEngine.UI;
 public class PilaManager : MonoBehaviour, IDropHandler
 {
     GameObject carta;
-    public List<string> listaPila;      //Lista degli elementi in questa pila
-    public string colorePila;           //Colore richiesto
-    public int numPila;                 //Numero richiesto
-
-    bool isCardInLadder;
+    public List<string> listaPila;  //Lista degli elementi in questa pila
+    string colorePila;              //Colore richiesto
+    public int numPila;             //Numero richiesto. Pubblico perchè utilizzato da CardManager per evitare conteggi errati di punti.
+    bool isCardInLadder;            //True quando la carta puntata fa parte di una scala
 
     //QUANDO UNA CARTA VIENE DROPPATA CONTROLLA CHE IL DROP SIA CORRETTO, IN CASO POSITIVO AGGIORNA LA LISTA E LA CARTA RICHIESTA
     public void OnDrop(PointerEventData eventData)
@@ -19,6 +18,7 @@ public class PilaManager : MonoBehaviour, IDropHandler
         carta = eventData.pointerDrag;              //Usando event data risalgo alla carta droppata
         Debug.Log("Ho droppato "+carta.name);
         CardManager cardScript = carta.GetComponent<CardManager>();
+
         bool legitDrop = false;
 
         //Devo verificare che il drop sia lecito

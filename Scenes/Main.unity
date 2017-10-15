@@ -3093,6 +3093,11 @@ Prefab:
       propertyPath: VittoriaText
       value: 
       objectReference: {fileID: 411822863}
+    - target: {fileID: 114509410151407456, guid: 815535fe2f37a68488e2c94006003047,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 815535fe2f37a68488e2c94006003047, type: 2}
   m_IsPrefabParent: 0

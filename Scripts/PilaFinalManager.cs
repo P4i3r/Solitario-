@@ -29,16 +29,17 @@ public class PilaFinalManager : MonoBehaviour, IDropHandler
             numPila = listaPila.Count + 1;
 
             if (numPila > 13)  //Comunico che la pila è completa
-            {
                 gameStateScript.PilaFinalStatus(1);
-            }
         }
     }
 
     void Start()
-    {
-        numPila = 1;    //Il numero della prima carta richiesta è sempre 1
+    {   
+        if (!Scripts)
+            Scripts = GameObject.FindGameObjectWithTag("scripts");
+
         gameStateScript = Scripts.GetComponent<GameStateManager>();
+        numPila = 1;    //Il numero della prima carta richiesta è sempre 1
     }
 
     public void RemoveCardFromList()

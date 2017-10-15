@@ -5,14 +5,13 @@ using UnityEngine.UI;
 
 public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerClickHandler
 {
-
-    public struct myCard
+    public struct MyCard
     {
         public bool isRevealed;
         public int number;
         public char suit;
 
-        public myCard(bool revealed, int num, char sut)
+        public MyCard(bool revealed, int num, char sut)
         {
             isRevealed = revealed;
             number = num;
@@ -23,7 +22,7 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
     public Transform targetTransformParent;     //Parent a cui tornare se lo spostamento è errato
     Transform lastTransformParent;              //Parent usato per comparazione per vedere se si è cambiato lista
     string thisCardName;                        //Nome del gO assegnato dal generatore di carte
-    public myCard thisCard = new myCard();      //struct della mia carta
+    public MyCard thisCard = new MyCard();      //struct della mia carta
     //Animator animator;
     PilaManager pilaScript;
     PilaFinalManager pilaFinalScript;
@@ -190,23 +189,23 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
         //Nel caso in cui cui questa carta sia stata spostata via permanentemente da una Pila dico a quella pila di ricontrollare
         if (transform.parent != lastTransformParent)    //la sua lista degli elementi e le sue richieste
         {
-            scriptScore = Scripts.GetComponent<ScoreManager>();
-            scriptScore.UpdateMosse();
+            //scriptScore = Scripts.GetComponent<ScoreManager>();
+            //scriptScore.UpdateMosse();
 
             if (transform.parent.tag == "pila")     // Dico a questa pila di refreshare la lista perchè la carta è stata aggiunta
             {
                 pilaScript = transform.parent.GetComponent<PilaManager>();
                 pilaScript.RefreshCardList();
                 pilaScript.GetColorAndNumber();
-
+                //Controllo se sto muovendo la carta tra due pile con richiesta similare, in modo da evitare l'accumulo di punti
                 PilaManager scriptLastPila;
                 scriptLastPila = lastTransformParent.GetComponent<PilaManager>();
-                if(pilaScript.numPila != scriptLastPila.numPila)
-                    scriptScore.UpdatePunti(5);         // 5 punti se la carta è stata spostata da una pila
+                //if(pilaScript.numPila != scriptLastPila.numPila)
+                    //scriptScore.UpdatePunti(5);         // 5 punti se la carta è stata spostata da una pila
             }
             else if (transform.parent.tag == "pilaFinal")
             {
-                scriptScore.UpdatePunti(15);
+                //scriptScore.UpdatePunti(15);
             }
 
 
@@ -230,7 +229,7 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
 
                 Debug.Log("Rimuovo " + transform.name + " dalla lista della pila Final.");
 
-                scriptScore.UpdatePunti(-15);
+                //scriptScore.UpdatePunti(-15);
             }
             else if (lastTransformParent.tag == "pilaScarti")
             {

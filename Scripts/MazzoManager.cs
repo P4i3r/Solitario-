@@ -24,7 +24,13 @@ public class MazzoManager : MonoBehaviour, IPointerClickHandler
     private void Start()
     {
         scriptScore = Scripts.GetComponent<ScoreManager>();
-        
+
+        if (!pilaScarti)
+            pilaScarti = GameObject.FindGameObjectWithTag("pilaScarti");
+
+        if (!Scripts)
+            Scripts = GameObject.FindGameObjectWithTag("scripts");
+
         CreateOrder();
         CreateBoard();              //IN TESTING
         CreateCard();               //Genero la prima carta che rimane coperta
@@ -94,7 +100,7 @@ public class MazzoManager : MonoBehaviour, IPointerClickHandler
         listaScarti.Add(listaMazzo[0]);     //Aggiungo la carta alla lista degli scarti
         listaMazzo.RemoveAt(0);             //La rimuovo da questa
 
-        scriptScore.UpdateMosse();
+        //scriptScore.UpdateMosse();
     }
 
     public void RemoveCardFromList()        //Quando muovo la prima carta degli scarti in una pila la rimuovo dalla lista
