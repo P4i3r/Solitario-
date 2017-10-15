@@ -5,6 +5,7 @@ using UnityEngine;
 public class GameStateManager : MonoBehaviour {
 
     public int numeroPileComplete;
+    public GameObject VittoriaText;
 
 	void Start ()
     {
@@ -16,10 +17,10 @@ public class GameStateManager : MonoBehaviour {
 		
 	}
 
-    public void PilaFinalStatus(int num)    //WIP: È un sistema estremamente rozzo, ma è anche vero che un int è sufficiente allo scopo.
+    public void PilaFinalStatus(int num)    //WIP. Attualmente è un sistema funzionale allo scopo, ma poco elegante
     {
         numeroPileComplete = numeroPileComplete + num;
         if (numeroPileComplete == 4)
-            Debug.Log("Hai vinto!");
+            VittoriaText.SetActive(true);
     }
 }

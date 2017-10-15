@@ -159,6 +159,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetTransformParent: {fileID: 0}
+  Scripts: {fileID: 1246694026009216, guid: 815535fe2f37a68488e2c94006003047, type: 2}
   spriteFronte: {fileID: 21300000, guid: 3be46044e43e11e40844e2014e2d050a, type: 3}
   suitsArray:
   - {fileID: 21300000, guid: ef057e000bb1117469a4134bc041182d, type: 3}

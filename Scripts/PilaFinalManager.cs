@@ -28,7 +28,7 @@ public class PilaFinalManager : MonoBehaviour, IDropHandler
             listaPila.Add(carta.name);
             numPila = listaPila.Count + 1;
 
-            if (numPila == 13)  //Comunico che la pila è completa
+            if (numPila > 13)  //Comunico che la pila è completa
             {
                 gameStateScript.PilaFinalStatus(1);
             }

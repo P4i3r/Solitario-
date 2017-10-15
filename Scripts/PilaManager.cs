@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class PilaManager : MonoBehaviour, IDropHandler
 {
@@ -10,10 +11,13 @@ public class PilaManager : MonoBehaviour, IDropHandler
     public string colorePila;           //Colore richiesto
     public int numPila;                 //Numero richiesto
 
+    bool isCardInLadder;
+
     //QUANDO UNA CARTA VIENE DROPPATA CONTROLLA CHE IL DROP SIA CORRETTO, IN CASO POSITIVO AGGIORNA LA LISTA E LA CARTA RICHIESTA
     public void OnDrop(PointerEventData eventData)
     {
         carta = eventData.pointerDrag;              //Usando event data risalgo alla carta droppata
+        Debug.Log("Ho droppato "+carta.name);
         CardManager cardScript = carta.GetComponent<CardManager>();
         bool legitDrop = false;
 
@@ -55,6 +59,8 @@ public class PilaManager : MonoBehaviour, IDropHandler
 
         if (listaPila.Count > 0)
             RevealLastCard();
+
+        isCardInLadder = false;     //Variabile utilizzata nel check se la carta draggata fa parte di una scala
     }
 
     public void RefreshCardList()
@@ -64,6 +70,7 @@ public class PilaManager : MonoBehaviour, IDropHandler
         {
             listaPila.Add(child.name);
         }
+        isCardInLadder = false;
     }
 
     public void GetColorAndNumber()
@@ -95,32 +102,27 @@ public class PilaManager : MonoBehaviour, IDropHandler
             cardScript.RevealCard();
     }
 
-    public void CheckIfLadder(string cardName)      //In nome della carta che mi ha chiamato
+    public bool CheckIfLadder(string cardName)      //In nome della carta che mi ha chiamato
     {
-        if (listaPila.Count > 1)    //Se ho più di una carta nella lista
+        int cardIndex = listaPila.IndexOf(cardName);
+        isCardInLadder = false;
+
+        if ((listaPila.Count > 1) && (cardIndex != (listaPila.Count - 1)))    //Se ho più di una carta nella lista e se questa carta non è l'ultima
         {
-            //var cardIndex = //listaPila.IndexOf(cardName);
-
-
-            int i = 0;
-            foreach (var item in listaPila)
-            {
-                i = i + 1;
-                if (item == cardName)
-                    break;
-            }
-            int cardIndex = i;
-            Debug.Log("###Numero di "+cardName+" nella pila :"+cardIndex);
-
-            string nameCardToCheck = listaPila[cardIndex-1];
+            string nameCardToCheck = listaPila[cardIndex + 1];
             GameObject cardToCheck = transform.Find(nameCardToCheck).gameObject;
             CardManager cardScript = cardToCheck.GetComponent<CardManager>();
+            Debug.Log("Sto controllando " + cardToCheck);
             if (cardScript.thisCard.isRevealed)
-                Debug.Log("Carta rivelata");
+            {
+                cardToCheck.transform.SetParent(GameObject.Find(cardName).transform);
+                Image cardToCheckImage = cardToCheck.GetComponent<Image>();
+                cardToCheckImage.raycastTarget = false;
+                
+                CheckIfLadder(nameCardToCheck);
+                isCardInLadder = true;
+            }
         }
-        //Ho il numero della carta, ora devo controllare se ho una carta sopra, se non ce l'ho esco, se ce l'ho vedo se è rivelata, se non è esco
-        //se è rivelata controllo se è in scala con quella che sto trascinando, se lo è ripeto il passaggio fino a quando trovo una carta che non
-        //lo è. Ogni volta aggiunto quella carta come child.
-        //Impacchetto la scala, ma poi la devo anche far spacchettare.
+        return isCardInLadder;
     }
 }

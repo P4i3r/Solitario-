@@ -28,6 +28,11 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
     PilaManager pilaScript;
     PilaFinalManager pilaFinalScript;
     MazzoManager mazzoScript;
+    bool cardIsInLadder;
+
+    public GameObject Scripts;
+    ScoreManager scriptScore;
+
 
     // ---<[ GRAFICA]>---
     Image largeSuitImage;                       //seme centrale
@@ -142,6 +147,7 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
         smallSuitImage.preserveAspect = true;
         largeSuitImage.preserveAspect = true;
         cardImage.raycastTarget = true;     //Nel caso in cui la carta si trovasse sotto una pila era stata generata con il raycast target disabilitato
+
         thisCard.isRevealed = true;
     }
 
@@ -156,16 +162,12 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
         targetTransformParent = transform.parent;       //Salvo il mio parent di partenza, in modo da poterci tornare in caso di spostamento non permesso
         lastTransformParent = transform.parent;
 
-        //____ WORK IN PROGRESS : TEMP CODE ____
-        //TODO : Devo verificare se sono la prima carta della pila o se faccio parte di un blocco ordinato
         if (transform.parent.tag == "pila")
         {
             pilaScript = lastTransformParent.GetComponent<PilaManager>();
-            pilaScript.CheckIfLadder(transform.name);
+            cardIsInLadder = pilaScript.CheckIfLadder(transform.name);
         }
-
-
-        //____ WORK IN PROGRESS : TEMP CODE ____
+        
         transform.SetParent(transform.parent.parent);   //Rimuovo la mia carta dalla pila nell'inspector (mi permette di spostarla)
     }
 
@@ -177,18 +179,37 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        cardImage.raycastTarget = true;             //Riabilito il raycast della carta   
-        transform.SetParent(targetTransformParent); //Sposto la carta
+        cardImage.raycastTarget = true;                 //Riabilito il raycast della carta   
+        transform.SetParent(targetTransformParent);     //Sposto la carta
+
+        if (cardIsInLadder)         //Se la carta era in una scala allora devo spacchettarla
+        {
+            Spacchetta(thisCardName, transform);
+        }
 
         //Nel caso in cui cui questa carta sia stata spostata via permanentemente da una Pila dico a quella pila di ricontrollare
-        if (this.transform.parent != lastTransformParent)           //la sua lista degli elementi e le sue richieste
+        if (transform.parent != lastTransformParent)    //la sua lista degli elementi e le sue richieste
         {
+            scriptScore = Scripts.GetComponent<ScoreManager>();
+            scriptScore.UpdateMosse();
+
             if (transform.parent.tag == "pila")     // Dico a questa pila di refreshare la lista perchè la carta è stata aggiunta
             {
                 pilaScript = transform.parent.GetComponent<PilaManager>();
                 pilaScript.RefreshCardList();
                 pilaScript.GetColorAndNumber();
+
+                PilaManager scriptLastPila;
+                scriptLastPila = lastTransformParent.GetComponent<PilaManager>();
+                if(pilaScript.numPila != scriptLastPila.numPila)
+                    scriptScore.UpdatePunti(5);         // 5 punti se la carta è stata spostata da una pila
             }
+            else if (transform.parent.tag == "pilaFinal")
+            {
+                scriptScore.UpdatePunti(15);
+            }
+
+
             //Vado a dire alla mia vecchia pila che non ne faccio più parte
             if (lastTransformParent.tag == "pila")
             {
@@ -208,6 +229,8 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
                 pilaFinalScript.RemoveCardFromList();
 
                 Debug.Log("Rimuovo " + transform.name + " dalla lista della pila Final.");
+
+                scriptScore.UpdatePunti(-15);
             }
             else if (lastTransformParent.tag == "pilaScarti")
             {
@@ -215,8 +238,29 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
                 mazzoScript.RemoveCardFromList();
 
                 Debug.Log("Rimuovo " + transform.name + " dalla lista del mazzo.");
-
             }
         }
+    }
+
+    void Spacchetta(string cardName, Transform cartaTransform)
+    {
+        GameObject childCard = null;
+
+        if (cartaTransform.childCount > 3)
+        {
+            childCard = cartaTransform.GetChild(3).gameObject;
+            Debug.Log("Provo a spacchettare " + childCard.name);
+
+            if (childCard.tag == "carta")
+            {
+                Debug.Log("Setto il parent di " + childCard.name + " a :" + transform.parent.name);
+                childCard.transform.SetParent(transform.parent);
+
+                Image childCardImage = childCard.GetComponent<Image>();
+                childCardImage.raycastTarget = true;
+                Spacchetta(childCard.name, childCard.transform);
+            }
+        }
+        return;
     }
 }
