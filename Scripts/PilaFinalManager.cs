@@ -1,25 +1,22 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class PilaFinalManager : MonoBehaviour, IDropHandler
-{   
+{
     GameObject carta;
 
-    public List<string> listaPila;      //Lista degli elementi in questa pila
-    public char semePila;               //Colore richiesto
-    public int numPila;                 //Numero richiesto
+    public List<string> listaPila;           //Lista degli elementi in questa pila
+    public char semePila;                    //Colore richiesto
+    public int numPila;                      //Numero richiesto
 
     public GameObject Scripts;
     GameStateManager gameStateScript;
 
-    //QUANDO UNA CARTA VIENE DROPPATA CONTROLLA CHE IL DROP SIA CORRETTO, IN CASO POSITIVO AGGIORNA LA LISTA E LA CARTA RICHIESTA
+    //Quando viene droppata una carta controlla che si corretta, in caso positivo aggiorna la richiesta e il numero di carte nella pila
     public void OnDrop(PointerEventData eventData)
     {
-        //Usando event data risalgo alla carta droppata
-        carta = eventData.pointerDrag;
+        carta = eventData.pointerDrag;       //Usando eventData risalgo alla carta droppata
         CardManager cardScript = carta.GetComponent<CardManager>();
         //Controllo seme e numero
         if (cardScript.thisCard.suit == semePila && cardScript.thisCard.number == numPila)
@@ -28,27 +25,26 @@ public class PilaFinalManager : MonoBehaviour, IDropHandler
             listaPila.Add(carta.name);
             numPila = listaPila.Count + 1;
 
-            if (numPila > 13)  //Comunico che la pila è completa
+            if (numPila > 13)               //Comunico che la pila è completa
                 gameStateScript.PilaFinalStatus(1);
         }
     }
 
     void Start()
-    {   
+    {
         if (!Scripts)
             Scripts = GameObject.FindGameObjectWithTag("scripts");
 
         gameStateScript = Scripts.GetComponent<GameStateManager>();
-        numPila = 1;    //Il numero della prima carta richiesta è sempre 1
+        numPila = 1;                        //Il numero della prima carta richiesta è sempre 1
     }
 
     public void RemoveCardFromList()
-    {   
-        if(numPila == 13)   //Se il numero di carte nella pila era 13, e ora ne sto rimuovendo una allora ho una pila completa in meno
+    {
+        if (numPila == 13)                  //Se il numero di carte nella pila era 13, e ora ne sto rimuovendo una allora ho una pila completa in meno
             gameStateScript.PilaFinalStatus(-1);
 
         listaPila.RemoveAt(listaPila.Count - 1);
-        numPila = listaPila.Count + 1;
-
+        numPila = listaPila.Count + 1;      //Riduco numPila
     }
 }

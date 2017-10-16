@@ -16,7 +16,7 @@ public class PilaManager : MonoBehaviour, IDropHandler
     public void OnDrop(PointerEventData eventData)
     {
         carta = eventData.pointerDrag;              //Usando event data risalgo alla carta droppata
-        Debug.Log("Ho droppato "+carta.name);
+        Debug.Log("Ho droppato " + carta.name);
         CardManager cardScript = carta.GetComponent<CardManager>();
 
         bool legitDrop = false;
@@ -102,7 +102,7 @@ public class PilaManager : MonoBehaviour, IDropHandler
             cardScript.RevealCard();
     }
 
-    public bool CheckIfLadder(string cardName)      //In nome della carta che mi ha chiamato
+    public bool CheckIfLadder(string cardName)          //In nome della carta che mi ha chiamato
     {
         int cardIndex = listaPila.IndexOf(cardName);
         isCardInLadder = false;
@@ -118,7 +118,7 @@ public class PilaManager : MonoBehaviour, IDropHandler
                 cardToCheck.transform.SetParent(GameObject.Find(cardName).transform);
                 Image cardToCheckImage = cardToCheck.GetComponent<Image>();
                 cardToCheckImage.raycastTarget = false;
-                
+
                 CheckIfLadder(nameCardToCheck);
                 isCardInLadder = true;
             }

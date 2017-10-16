@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 114509410151407456}
   m_Layer: 0
   m_Name: Scripts
-  m_TagString: Untagged
+  m_TagString: scripts
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -52,8 +52,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8370291194a82194caf080fbbe64a69d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PuntiCounter: {fileID: 0}
-  MosseCounter: {fileID: 0}
+  puntiCounter: {fileID: 0}
+  mosseCounter: {fileID: 0}
 --- !u!114 &114830435338266346
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -66,4 +66,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numeroPileComplete: 0
-  VittoriaText: {fileID: 0}
+  VittoriaText: {fileID: 1625902580797284, guid: d3fa6bb1bc83ede40b6df4371f562620,
+    type: 2}

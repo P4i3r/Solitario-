@@ -18,7 +18,7 @@ public class GameStateManager : MonoBehaviour  {
         if (!VittoriaText)
             VittoriaText = GameObject.FindGameObjectWithTag("vittoriaText");
 
-        if (Application.platform == RuntimePlatform.Android)
+        if (Application.platform == RuntimePlatform.Android)        //Controllo se l'app sta runnando su Android
             isRunningOnAndroid = true;
     }
 
@@ -31,7 +31,7 @@ public class GameStateManager : MonoBehaviour  {
         }        
     }    
 
-    public void PilaFinalStatus(int num)    //WIP. Attualmente è un sistema funzionale allo scopo, ma poco elegante
+    public void PilaFinalStatus(int num)    //WIP. È un sistema funzionante e funzionale allo scopo, ma poco elegante
     {
         numeroPileComplete = numeroPileComplete + num;
         if (numeroPileComplete == 4)

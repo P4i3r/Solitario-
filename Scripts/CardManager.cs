@@ -23,17 +23,16 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
     Transform lastTransformParent;              //Parent usato per comparazione per vedere se si è cambiato lista
     string thisCardName;                        //Nome del gO assegnato dal generatore di carte
     public MyCard thisCard = new MyCard();      //struct della mia carta
-    //Animator animator;
     PilaManager pilaScript;
     PilaFinalManager pilaFinalScript;
     MazzoManager mazzoScript;
-    bool cardIsInLadder;
+    bool cardIsInLadder;                        //Se questa carta fa parte, o meno, di una scala ordinata
 
-    public GameObject Scripts;
-    ScoreManager scriptScore;
-
+    //public GameObject Scripts;                //Necessari per il calcolo del punteggio
+    //ScoreManager scriptScore;
 
     // ---<[ GRAFICA]>---
+    Animator animator;
     Image largeSuitImage;                       //seme centrale
     Image smallSuitImage;                       //seme in alto a destra
     Image numberImage;                          //numero
@@ -44,12 +43,16 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
     public Sprite[] numberArray;                //Array di possibili numeri
 
     public GameObject number;                   //Linkati nell'inspector
-    public GameObject largeSuit;                //O in caso alternativo in start DA FARE
+    public GameObject largeSuit;
     public GameObject smallSuit;
 
     public void OnPointerClick(PointerEventData eventData)
-    {   
+    {
         //TODO: CODICE PER IL DOUBLE CLICK
+        //In caso di double click vai a controllare il Manifesto (classe TODO nella quale listo le carte richieste da tutte le pile)
+        //Se nel Manifesto trovo una pila compatibile sposto la carta la.
+        //Nota: in caso una pila e una pilaFinal richiedano la stessa carta dare la precedenza a pilaFinal
+
         if (!thisCard.isRevealed)               //Non dovrebbe mai essere il caso
             RevealCard();
     }
@@ -57,17 +60,19 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
     //Giro la carta e imposto le sprites
     public void RevealCard()
     {
-        thisCardName = transform.name;          //Prendo il nome
-        thisCard.isRevealed = false;            //Inizializzo come carta coperta, poi si scopre automaticamente.
-        thisCard.suit = thisCardName[0];        //Determino il seme (dal seme posso determinare il colore)
-        thisCard.number = Convert.ToInt32(thisCardName.Remove(0, 1));   //Determino il numero togliendo la prima leggera dalla stringa del nome
+        animator = GetComponent<Animator>();    //Uso GetComponent qui al posto che in start per evitare che 52 carte chiamino GetComponent all'avvio
+        animator.SetTrigger("ruota");           //Attraverso l'animazione ruota chiamo RevealGraphics, questo mi permette di fare lo switch delle sprites esattamente quando il transform è a 90°
+    }
 
-        //animator = GetComponent<Animator>();    //Uso GetComponent qui al posto che in start per evitare che 52 carte chiamino GetComponent all'avvio
-        //animator.Play("ruotaCarta");
+    public void RevealGraphics()
+    {
+        thisCardName = transform.name;          //Nome della carta: xNN, dove x è uguale alle lettere c,h,d,s rappresentanti il formato, e NN è il numero da 1 a 13.
+        thisCard.suit = thisCardName[0];        //Determino il seme guardando la prima lettera del nome, successivamente dal seme posso determinare anche il colore
+        thisCard.number = Convert.ToInt32(thisCardName.Remove(0, 1));   //Determino il numero togliendo la prima leggera dalla stringa del nome     
 
         //CAMBIO L'ASPETTO DELLA CARTA
         cardImage = gameObject.GetComponent<Image>();
-        cardImage.sprite = spriteFronte;
+        cardImage.sprite = spriteFronte;        //Camnio il retro
         //Acquisisco l'Image renderer delle 3 porzioni della carta
         numberImage = number.GetComponent<Image>();
         smallSuitImage = smallSuit.GetComponent<Image>();
@@ -139,34 +144,38 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
             {
                 smallSuitImage.sprite = suitsArray[1];
             }
-
+            numberImage.color = new Color32(196, 47, 55, 255);  //Nel caso in cui la carta sia rossa cambio il colore della sprite del numero di conseguenza
         }
 
-        numberImage.preserveAspect = true;
+        numberImage.preserveAspect = true;      //Forzo l'aspect rateo corretto
         smallSuitImage.preserveAspect = true;
         largeSuitImage.preserveAspect = true;
-        cardImage.raycastTarget = true;     //Nel caso in cui la carta si trovasse sotto una pila era stata generata con il raycast target disabilitato
+        cardImage.raycastTarget = true;         //Nel caso in cui la carta si trovasse sotto una pila era stata generata con il raycast target disabilitato
 
-        thisCard.isRevealed = true;
+        /*if (!Scripts)                         //Script per il punteggio
+            Scripts = GameObject.FindGameObjectWithTag("scripts");
+
+        scriptScore = Scripts.GetComponent<ScoreManager>();*/
+
+        thisCard.isRevealed = true;             //La carta è finalmente rivelata
     }
 
-    //__________ MOVIMENTO DELLA CARTA __________
 
-    //Salvo la posizione di partenza in modo da poter resettare il movimento se il giocatore compie un'azione non permessa
+    //__________ MOVIMENTO DELLA CARTA __________
     public void OnBeginDrag(PointerEventData eventData)
     {
         cardImage = gameObject.GetComponent<Image>();
         cardImage.raycastTarget = false;                //Disattivo il raycastTarget della carta in modo che il mio raycast possa colpire la pila
 
         targetTransformParent = transform.parent;       //Salvo il mio parent di partenza, in modo da poterci tornare in caso di spostamento non permesso
-        lastTransformParent = transform.parent;
+        lastTransformParent = transform.parent;         //Ne salvo una copia per confronto
 
-        if (transform.parent.tag == "pila")
+        if (transform.parent.tag == "pila")             //Se la carta è stata draggata a partire da una pila controlla se fa parte di una scala
         {
             pilaScript = lastTransformParent.GetComponent<PilaManager>();
             cardIsInLadder = pilaScript.CheckIfLadder(transform.name);
         }
-        
+
         transform.SetParent(transform.parent.parent);   //Rimuovo la mia carta dalla pila nell'inspector (mi permette di spostarla)
     }
 
@@ -174,6 +183,7 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
     public void OnDrag(PointerEventData eventData)
     {
         transform.position = eventData.position;
+        //TODO : Aggiungere opzioni di smooth follow rispetto al puntatore
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -181,7 +191,7 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
         cardImage.raycastTarget = true;                 //Riabilito il raycast della carta   
         transform.SetParent(targetTransformParent);     //Sposto la carta
 
-        if (cardIsInLadder)         //Se la carta era in una scala allora devo spacchettarla
+        if (cardIsInLadder)                             //Se la carta era in una scala allora devo spacchettarla
         {
             Spacchetta(thisCardName, transform);
         }
@@ -189,23 +199,25 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
         //Nel caso in cui cui questa carta sia stata spostata via permanentemente da una Pila dico a quella pila di ricontrollare
         if (transform.parent != lastTransformParent)    //la sua lista degli elementi e le sue richieste
         {
-            //scriptScore = Scripts.GetComponent<ScoreManager>();
             //scriptScore.UpdateMosse();
 
-            if (transform.parent.tag == "pila")     // Dico a questa pila di refreshare la lista perchè la carta è stata aggiunta
+            if (transform.parent.tag == "pila")         // Dico a questa pila di refreshare la lista perchè la carta è stata aggiunta
             {
                 pilaScript = transform.parent.GetComponent<PilaManager>();
                 pilaScript.RefreshCardList();
                 pilaScript.GetColorAndNumber();
                 //Controllo se sto muovendo la carta tra due pile con richiesta similare, in modo da evitare l'accumulo di punti
-                PilaManager scriptLastPila;
+                /*PilaManager scriptLastPila;
                 scriptLastPila = lastTransformParent.GetComponent<PilaManager>();
-                //if(pilaScript.numPila != scriptLastPila.numPila)
-                    //scriptScore.UpdatePunti(5);         // 5 punti se la carta è stata spostata da una pila
+                if (scriptLastPila != null)             //lastTransform potrebbe anche essere anche il mazzo, in quel caso non controllare
+                {
+                    if(pilaScript.numPila != scriptLastPila.numPila)
+                        scriptScore.UpdatePunti(5);     // 5 punti se la carta è stata spostata da una pila
+                }
             }
             else if (transform.parent.tag == "pilaFinal")
             {
-                //scriptScore.UpdatePunti(15);
+                scriptScore.UpdatePunti(15);*/
             }
 
 
@@ -213,11 +225,11 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
             if (lastTransformParent.tag == "pila")
             {
                 pilaScript = lastTransformParent.GetComponent<PilaManager>();
-                pilaScript.RefreshCardList();
-                pilaScript.GetColorAndNumber();
+                pilaScript.RefreshCardList();           //Ricontrolla quali sono gli elementi della lista
+                pilaScript.GetColorAndNumber();         //Aggiorna la mia carta richiesta
 
                 Debug.Log("Rimuovo " + transform.name + " dalla lista della pila.");
-                
+
                 //Se la pila ha più di 0 elementi vado a rivelare l'ultima carta
                 if (pilaScript.listaPila.Count > 0)
                     pilaScript.RevealLastCard();
@@ -257,7 +269,7 @@ public class CardManager : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
 
                 Image childCardImage = childCard.GetComponent<Image>();
                 childCardImage.raycastTarget = true;
-                Spacchetta(childCard.name, childCard.transform);
+                Spacchetta(childCard.name, childCard.transform);    //Ricorsione
             }
         }
         return;

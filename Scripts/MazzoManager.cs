@@ -8,8 +8,8 @@ public class MazzoManager : MonoBehaviour, IPointerClickHandler
     public GameObject cartaPrefab;
     public GameObject pilaScarti;
 
-    public GameObject Scripts;
-    ScoreManager scriptScore;
+    //public GameObject Scripts;
+    //ScoreManager scriptScore;
 
     GameObject pila;
     PilaManager pilaScript;
@@ -23,17 +23,17 @@ public class MazzoManager : MonoBehaviour, IPointerClickHandler
 
     private void Start()
     {
-        scriptScore = Scripts.GetComponent<ScoreManager>();
-
         if (!pilaScarti)
             pilaScarti = GameObject.FindGameObjectWithTag("pilaScarti");
 
-        if (!Scripts)
+        /*if (!Scripts)
             Scripts = GameObject.FindGameObjectWithTag("scripts");
 
+        scriptScore = Scripts.GetComponent<ScoreManager>();*/
+
         CreateOrder();
-        CreateBoard();              //IN TESTING
-        CreateCard();               //Genero la prima carta che rimane coperta
+        CreateBoard();
+        CreateCard();                       //Genero la prima carta che rimane coperta
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -65,7 +65,7 @@ public class MazzoManager : MonoBehaviour, IPointerClickHandler
 
     void CreateOrder()
     {
-        for (int i = 1; i < 14; i++)            //Popolo il mazzo di 52 carte
+        for (int i = 1; i < 14; i++)       //Popolo il mazzo di 52 carte
         {
             listaMazzo.Add("s" + i);
             listaMazzo.Add("d" + i);
@@ -82,13 +82,14 @@ public class MazzoManager : MonoBehaviour, IPointerClickHandler
         GameObject nuovaCarta = Instantiate(cartaPrefab, transform.position, transform.rotation);
         nuovaCarta.name = listaMazzo[0];
         nuovaCarta.transform.SetParent(transform);
+        nuovaCarta.transform.localScale = Vector3.one;      //Questa riga mi serve perchè con il resize dell'UI la scale delle carte cambia in modo anomalo
 
         //Disabilito il raycast, questo mi impedisce di muovere carte coperte nelle pile. Viene riattivato con il Reveal()
         Image nuovaCartaImage;
         nuovaCartaImage = nuovaCarta.GetComponent<Image>();
         nuovaCartaImage.raycastTarget = false;
 
-        carta = nuovaCarta;     //Mi serve per il MoveCard()
+        carta = nuovaCarta;                 //Mi serve per il MoveCard()
     }
 
     void MoveCard()
@@ -100,7 +101,9 @@ public class MazzoManager : MonoBehaviour, IPointerClickHandler
         listaScarti.Add(listaMazzo[0]);     //Aggiungo la carta alla lista degli scarti
         listaMazzo.RemoveAt(0);             //La rimuovo da questa
 
-        //scriptScore.UpdateMosse();
+        //scriptScore.UpdateMosse(1);       //Ho mosso una carta, aumento il punteggio di 1
+
+        //TODO: Devo salvare questa mossa nella lista delle mosse, in modo da poterla invertire in caso di pressione di tasto "annulla mossa"
     }
 
     public void RemoveCardFromList()        //Quando muovo la prima carta degli scarti in una pila la rimuovo dalla lista
@@ -111,7 +114,6 @@ public class MazzoManager : MonoBehaviour, IPointerClickHandler
 
     void CreateBoard()
     {
-
         for (int i = 1; i < 8; i++)
         {
             string nomePilaTemp = "pila";
